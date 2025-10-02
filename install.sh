@@ -104,6 +104,7 @@ if command -v apt >/dev/null 2>&1; then
 	install_autoSuggestion
 	set_zsh_default
 	install_AppImg
+	install_app
 else
 	echo "OS or packages installer not Support"
 	exit 1
