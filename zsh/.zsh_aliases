@@ -1,6 +1,8 @@
 
+appimg_path="$HOME/.dotfiles/AppImg"
+
 ## piscine [DEPRECATED]
-alias mkex="$shell_path"mkex.sh
+# alias mkex="$shell_path"mkex.sh
 alias rmOut="find . -name '*.out' -print -delete"
 ## Common
 alias norm='norminette -R CheckForbiddenSourceHeader'
@@ -12,8 +14,8 @@ alias nvim="$appimg_path"nvim.appimage
 alias vi="nvim"
 alias v='nvim'
 #alias xc="$appimg_path"KeePassXc.AppImage
-alias wterm="nohup $appimg_path"WezTerm.appImage
-alias ghostty="$appimg_path"Ghostty-1.1.0-x86_64.AppImage
+# alias wterm="nohup $appimg_path"WezTerm.appImage
+# alias ghostty="$appimg_path"Ghostty-1.1.0-x86_64.AppImage
 # Utils
 alias P="cd ~/Prog"
 alias CC="cd ~/Prog/CC/"
