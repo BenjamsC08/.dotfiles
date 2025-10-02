@@ -4,7 +4,7 @@ packages="
   stow wget terminator zsh git gcc clang valgrind gdb build-essential 
   curl zip unzip pciutils tree luarocks xsel xclip bear make libfuse2t64
 "
-modules="font nvim zsh"
+modules="font nvim zsh terminator"
 
 DOTFILES_DIR="$HOME/.dotfiles"
 APPIMG_DIR="$HOME/.dotfiles/AppImg"
@@ -88,6 +88,12 @@ install_AppImg() {
         exit 1
     fi
     chmod u+x "$APPIMG_DIR/KeePassXC.AppImage"
+}
+
+install_app() {
+	if [ ! -d "$HOME/.config/BraveSoftware" ]; then
+		curl -fsS https://dl.brave.com/install.sh | sh
+	fi
 }
 
 if command -v apt >/dev/null 2>&1; then

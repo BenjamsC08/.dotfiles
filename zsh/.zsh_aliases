@@ -13,7 +13,7 @@ alias val="valgrind --leak-check=full --track-origins=yes -s"
 alias nvim="$appimg_path"nvim.appimage
 alias vi="nvim"
 alias v='nvim'
-#alias xc="$appimg_path"KeePassXc.AppImage
+alias xc="$appimg_path"KeePassXc.AppImage
 # alias wterm="nohup $appimg_path"WezTerm.appImage
 # alias ghostty="$appimg_path"Ghostty-1.1.0-x86_64.AppImage
 # Utils
