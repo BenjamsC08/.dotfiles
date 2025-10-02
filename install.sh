@@ -172,10 +172,10 @@ check_status() {
   fi
 }
 
-if [ "$1" == "appimg" ]; then
+if [ $1 == "appimg" ]; then
     install_AppImg
     exit 0
-elif [ command -v apt >/dev/null 2>&1 ] && [ "$1" == "cli" ]; then
+elif [ command -v apt >/dev/null 2>&1 ] && [ $1 == "cli" ]; then
     install_packages
     create_link
     install_oh_my_zsh
@@ -183,7 +183,7 @@ elif [ command -v apt >/dev/null 2>&1 ] && [ "$1" == "cli" ]; then
     install_autoSuggestion
     set_zsh_default
     install_nvim
-elif [ command -v apt >/dev/null 2>&1 ] && [ -z "$1" ]; then
+elif [ command -v apt >/dev/null 2>&1 ] && [ -z $1 ]; then
     install_packages
     create_link
     install_oh_my_zsh
