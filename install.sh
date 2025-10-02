@@ -7,6 +7,7 @@ packages="
 modules="font nvim zsh"
 
 DOTFILES_DIR="$HOME/.dotfiles"
+APPIMG_DIR="$HOME/.dotfiles/AppImg"
 
 install_packages() {
   for package in $packages; do
@@ -66,6 +67,26 @@ create_link() {
     done
 }
 
+install_AppImg() {
+	mkdir -p "$APPIMG_DIR"
+    cd "$APPIMG_DIR"
+
+    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+    if [ ! -f "$APPIMG_DIR/nvim.appimage" ]; then
+        echo "Error downloading nvim.appimage"
+        exit 1
+    fi
+    chmod u+x "$APPIMG_DIR/nvim.appimage"
+
+    wget -O KeePassXC.AppImage https://github.com/keepassxreboot/keepassxc/releases/download/2.7.9/KeePassXC-2.7.9-x86_64.AppImage
+	mv KeePassXC-2.7.9-x86_64.AppImage KeePassXC.AppImage
+    if [ ! -f "$APPIMG_DIR/KeePassXC.AppImage" ]; then
+        echo "Error downloading KeePassXC.AppImage"
+        exit 1
+    fi
+    chmod u+x "$APPIMG_DIR/KeePassXC.AppImage"
+}
+
 if command -v apt >/dev/null 2>&1; then
 	install_packages
 	create_link
@@ -73,6 +94,7 @@ if command -v apt >/dev/null 2>&1; then
 	install_powerlevel10k
 	install_autoSuggestion
 	set_zsh_default
+	install_AppImg
 else
 	echo "OS or packages installer not Support"
 	exit 1
