@@ -96,7 +96,9 @@ install_app() {
 	fi
 }
 
-if command -v apt >/dev/null 2>&1; then
+if [ $1 == "appimg" ]; then
+	install_AppImg
+elif command -v apt >/dev/null 2>&1; then
 	install_packages
 	create_link
 	install_oh_my_zsh
