@@ -29,6 +29,7 @@ install_oh_my_zsh() {
 }
 
 install_powerlevel10k() {
+	echo "HERE"
   if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
     echo "Installing powerlevel10k..."
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
@@ -48,7 +49,7 @@ set_zsh_default() {
 
 create_link() {
     cd "$DOTFILES_DIR"
-    for mod in $modules_classic; do
+    for mod in $modules; do
         stow "$mod"
     done
 }
