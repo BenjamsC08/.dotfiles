@@ -67,8 +67,11 @@ create_link() {
     done
 }
 
-install_AppImg() {
-	mkdir -p "$APPIMG_DIR"
+install_nvim() {
+	if [ ! -d "$APPIMG_DIR"]; then
+		mkdir -p "$APPIMG_DIR"
+	fi
+
     cd "$APPIMG_DIR"
 
     if [ ! -f "$APPIMG_DIR/nvim.appimage" ]; then
@@ -79,8 +82,10 @@ install_AppImg() {
         exit 1
     fi
     chmod u+x "$APPIMG_DIR/nvim.appimage"
+}
 
-    if [ ! -f "$APPIMG_DIR/KeePassXC.AppImage" ]; then
+install_keepass() {
+	if [ ! -f "$APPIMG_DIR/KeePassXC.AppImage" ]; then
 		wget -O KeePassXC.AppImage https://github.com/keepassxreboot/keepassxc/releases/download/2.7.10/KeePassXC-2.7.10-x86_64.AppImage
 	fi
     if [ ! -f "$APPIMG_DIR/KeePassXC.AppImage" ]; then
@@ -88,6 +93,12 @@ install_AppImg() {
         exit 1
     fi
     chmod u+x "$APPIMG_DIR/KeePassXC.AppImage"
+
+}
+
+install_AppImg() {
+	install_nvim
+	install_keepass
 }
 
 install_app() {
@@ -99,7 +110,6 @@ install_app() {
 check_status() {
   echo -e "\n\n\n\n\n=== Vérification de l'installation ==="
 
-  # Vérification des packages
   echo "Vérification des packages :"
   for package in $packages; do
     if dpkg -s "$package" >/dev/null 2>&1; then
@@ -109,7 +119,6 @@ check_status() {
     fi
   done
 
-  # Vérification des liens symboliques
   echo -e "\nVérification des liens symboliques :"
   for mod in $modules; do
     case $mod in
@@ -146,7 +155,6 @@ check_status() {
     esac
   done
 
-  # Vérification des téléchargements AppImage
   echo -e "\nVérification des téléchargements AppImage :"
   for appimg in nvim.appimage KeePassXC.AppImage; do
     if [ -f "$APPIMG_DIR/$appimg" ]; then
@@ -156,7 +164,6 @@ check_status() {
     fi
   done
 
-  # Vérification de Brave
   echo -e "\nVérification de Brave :"
   if [ -d "$HOME/.config/BraveSoftware" ]; then
     echo "Brave downladed ✅"
@@ -165,19 +172,28 @@ check_status() {
   fi
 }
 
-if [ $1 == "appimg" ]; then
-	install_AppImg
-elif command -v apt >/dev/null 2>&1; then
-	install_packages
-	create_link
-	install_oh_my_zsh
-	install_powerlevel10k
-	install_autoSuggestion
-	set_zsh_default
-	install_AppImg
-	install_app
-	check_status
+if [ "$1" == "appimg" ]; then
+    install_AppImg
+    exit 0
+elif [ command -v apt >/dev/null 2>&1 ] && [ "$1" == "cli" ]; then
+    install_packages
+    create_link
+    install_oh_my_zsh
+    install_powerlevel10k
+    install_autoSuggestion
+    set_zsh_default
+    install_nvim
+elif [ command -v apt >/dev/null 2>&1 ] && [ -z "$1" ]; then
+    install_packages
+    create_link
+    install_oh_my_zsh
+    install_powerlevel10k
+    install_autoSuggestion
+    set_zsh_default
+    install_AppImg
+    install_app
+    check_status
 else
-	echo "OS or packages installer not Support"
-	exit 1
+    echo "OS or packages installer not supported"
+    exit 1
 fi
