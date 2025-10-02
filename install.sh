@@ -68,9 +68,7 @@ create_link() {
 }
 
 install_nvim() {
-	if [ ! -d "$APPIMG_DIR"]; then
-		mkdir -p "$APPIMG_DIR"
-	fi
+	mkdir -p "$APPIMG_DIR"
 
     cd "$APPIMG_DIR"
 
