@@ -30,9 +30,9 @@ install_oh_my_zsh() {
 
 install_powerlevel10k() {
 	echo "HERE"
-  if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
+  if [ ! -d "$HOME/powerlevel10k" ]; then
     echo "Installing powerlevel10k..."
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/powerlevel10k"
   else
     echo "powerlevel10k already installed"
   fi
