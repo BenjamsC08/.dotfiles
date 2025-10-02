@@ -173,24 +173,26 @@ check_status() {
 if [ "$1" == "appimg" ]; then
     install_AppImg
     exit 0
-elif [ command -v apt >/dev/null 2>&1 ] && [ "$1" == "cli" ]; then
-    install_packages
-    create_link
-    install_oh_my_zsh
-    install_powerlevel10k
-    install_autoSuggestion
-    set_zsh_default
-    install_nvim
-elif [ command -v apt >/dev/null 2>&1 ] && [ -z "$1" ]; then
-    install_packages
-    create_link
-    install_oh_my_zsh
-    install_powerlevel10k
-    install_autoSuggestion
-    set_zsh_default
-    install_AppImg
-    install_app
-    check_status
+if [ command -v apt >/dev/null 2>&1 ]; then
+	if [ "$1" == "cli" ]; then
+		install_packages
+		create_link
+		install_oh_my_zsh
+		install_powerlevel10k
+		install_autoSuggestion
+		set_zsh_default
+		install_nvim
+	else
+		install_packages
+		create_link
+		install_oh_my_zsh
+		install_powerlevel10k
+		install_autoSuggestion
+		set_zsh_default
+		install_AppImg
+		install_app
+		check_status
+	fi
 else
     echo "OS or packages installer not supported"
     exit 1
