@@ -182,7 +182,7 @@ elif command -v apt >/dev/null 2>&1; then
 		install_autoSuggestion
 		set_zsh_default
 		install_nvim
-	elif [-z "$1"]; then
+	else
 		install_packages
 		create_link
 		install_oh_my_zsh
@@ -192,9 +192,6 @@ elif command -v apt >/dev/null 2>&1; then
 		install_AppImg
 		install_app
 		check_status
-	else
-		echo "problem"
-		exit 1
 	fi
 else
     echo "OS or packages installer not supported"
