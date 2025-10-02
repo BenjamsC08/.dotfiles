@@ -32,7 +32,7 @@ install_powerlevel10k() {
 	echo "HERE"
   if [ ! -d "$HOME/powerlevel10k" ]; then
     echo "Installing powerlevel10k..."
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/powerlevel10k"
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
   else
     echo "powerlevel10k already installed"
   fi
@@ -50,15 +50,15 @@ set_zsh_default() {
 create_link() {
     cd "$DOTFILES_DIR"
     for mod in $modules; do
-        stow "$mod"
+        stow "$mod" --adopt
     done
 }
 
 if command -v apt >/dev/null 2>&1; then
 	install_packages
+	create_link
 	install_oh_my_zsh
 	install_powerlevel10k
-	create_link
 	set_zsh_default
 else
 	echo "OS or packages installer not Support"
