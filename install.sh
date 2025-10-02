@@ -96,6 +96,75 @@ install_app() {
 	fi
 }
 
+check_status() {
+  echo -e "\n\n\n\n\n=== Vérification de l'installation ==="
+
+  # Vérification des packages
+  echo "Vérification des packages :"
+  for package in $packages; do
+    if dpkg -s "$package" >/dev/null 2>&1; then
+      echo "package $package installed ✅"
+    else
+      echo "package $package not installed ❌"
+    fi
+  done
+
+  # Vérification des liens symboliques
+  echo -e "\nVérification des liens symboliques :"
+  for mod in $modules; do
+    case $mod in
+      zsh)
+        for file in .zshrc .p10k.zsh .aliases; do
+          if [ -L "$HOME/$file" ] && [ -e "$HOME/$file" ]; then
+            echo "link $file ✅"
+          else
+            echo "link $file ❌"
+          fi
+        done
+        ;;
+      nvim)
+        if [ -L "$HOME/.config/nvim/init.vim" ] || [ -L "$HOME/.config/nvim/init.lua" ]; then
+          echo "link nvim config ✅"
+        else
+          echo "link nvim config ❌"
+        fi
+        ;;
+      font)
+        if [ -d "$HOME/.fonts" ] && [ -L "$HOME/.fonts" ]; then
+          echo "link font directory ✅"
+        else
+          echo "link font directory ❌"
+        fi
+        ;;
+      terminator)
+        if [ -L "$HOME/.config/terminator/config" ]; then
+          echo "link terminator config installed ✅"
+        else
+          echo "link terminator config not installed ❌"
+        fi
+        ;;
+    esac
+  done
+
+  # Vérification des téléchargements AppImage
+  echo -e "\nVérification des téléchargements AppImage :"
+  for appimg in nvim.appimage KeePassXC.AppImage; do
+    if [ -f "$APPIMG_DIR/$appimg" ]; then
+      echo "$appimg downloaded ✅"
+    else
+      echo "$appimg not downloaded ❌"
+    fi
+  done
+
+  # Vérification de Brave
+  echo -e "\nVérification de Brave :"
+  if [ -d "$HOME/.config/BraveSoftware" ]; then
+    echo "Brave downladed ✅"
+  else
+    echo "Brave not downloaded ❌"
+  fi
+}
+
 if [ $1 == "appimg" ]; then
 	install_AppImg
 elif command -v apt >/dev/null 2>&1; then
@@ -107,6 +176,7 @@ elif command -v apt >/dev/null 2>&1; then
 	set_zsh_default
 	install_AppImg
 	install_app
+	check_status
 else
 	echo "OS or packages installer not Support"
 	exit 1
