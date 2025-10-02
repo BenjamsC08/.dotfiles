@@ -1,0 +1,26 @@
+
+## piscine [DEPRECATED]
+alias mkex="$shell_path"mkex.sh
+alias rmOut="find . -name '*.out' -print -delete"
+## Common
+alias norm='norminette -R CheckForbiddenSourceHeader'
+alias normD='norm -R CheckDefine'
+alias gcc="cc -Wall -Wextra -Werror -g3"
+alias val="valgrind --leak-check=full --track-origins=yes -s"
+#AppImage
+alias nvim="$appimg_path"nvim.appimage
+alias vi="nvim"
+alias v='nvim'
+#alias xc="$appimg_path"KeePassXc.AppImage
+alias wterm="nohup $appimg_path"WezTerm.appImage
+alias ghostty="$appimg_path"Ghostty-1.1.0-x86_64.AppImage
+# Utils
+alias P="cd ~/Prog"
+alias CC="cd ~/Prog/CC/"
+alias 42="cd ~/Prog/CC/"
+alias m="cd ~/Prog/MINE/"
+alias M="cd ~/Prog/MINE/"
+alias i="INIT"
+alias b="bluetooth_reset"
+
+

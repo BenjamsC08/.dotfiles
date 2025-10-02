@@ -1,0 +1,36 @@
+function GL() {
+    if [[ $1 =~ ^[0-9]+$ ]]; then
+        git --no-pager log -$1 --pretty=format:"%C(yellow)%h %C(reset)- %C(green)%s %C(reset) | %C(blue)%cd (%cr) %C(reset)" --date=format:'%Y-%m-%d %H:%M' --color=always
+    else
+        git --no-pager log -5 --pretty=format:"%C(yellow)%h %C(reset)- %C(green)%s %C(reset) | %C(blue)%cd (%cr) %C(reset)" --date=format:'%Y-%m-%d %H:%M' --color=always
+    fi
+}
+
+function INIT() {
+    if [ -z "$1" ]; then
+        echo "Erreur : veuillez fournir un nom de dossier"
+        return 1
+    fi
+    if [ -d "$1" ]; then
+        echo "Erreur : le dossier '$1' existe déjà"
+        return 1
+    fi
+    mkdir "$1" && cd "$1" && mkdir srcs includes ; touch .gitignore Makefile || {
+        echo "Erreur : échec lors de la création des dossiers"
+        return 1
+    }
+    if [ "$2" = "1" ]; then
+        git clone https://github.com/BenjamsC08/42_00_libft libft || {
+            echo "Erreur : échec du clonage du dépôt"
+            return 1
+        }
+    fi
+}
+
+cs() {
+	cd "$1" && clear && ls
+}
+
+goto() {
+    cd ~/"$1" && ls
+}
