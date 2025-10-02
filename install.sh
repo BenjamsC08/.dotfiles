@@ -114,7 +114,7 @@ check_status() {
   for mod in $modules; do
     case $mod in
       zsh)
-        for file in .zshrc .p10k.zsh .aliases; do
+        for file in .zshrc .p10k.zsh .zsh_aliases .zsh_func; do
           if [ -L "$HOME/$file" ] && [ -e "$HOME/$file" ]; then
             echo "link $file ✅"
           else
@@ -123,7 +123,7 @@ check_status() {
         done
         ;;
       nvim)
-        if [ -L "$HOME/.config/nvim/init.vim" ] || [ -L "$HOME/.config/nvim/init.lua" ]; then
+        if [ -L "$HOME/.config/nvim" ]; then
           echo "link nvim config ✅"
         else
           echo "link nvim config ❌"
@@ -137,10 +137,10 @@ check_status() {
         fi
         ;;
       terminator)
-        if [ -L "$HOME/.config/terminator/config" ]; then
-          echo "link terminator config installed ✅"
+        if [ -L "$HOME/.config/terminator" ]; then
+          echo "link terminator installed ✅"
         else
-          echo "link terminator config not installed ❌"
+          echo "link terminator not installed ❌"
         fi
         ;;
     esac
