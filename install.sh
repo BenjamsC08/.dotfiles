@@ -71,15 +71,18 @@ install_AppImg() {
 	mkdir -p "$APPIMG_DIR"
     cd "$APPIMG_DIR"
 
-    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+    if [ ! -f "$APPIMG_DIR/nvim.appimage" ]; then
+		wget -O nvim.appimage https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
+	fi
     if [ ! -f "$APPIMG_DIR/nvim.appimage" ]; then
         echo "Error downloading nvim.appimage"
         exit 1
     fi
     chmod u+x "$APPIMG_DIR/nvim.appimage"
 
-    wget -O KeePassXC.AppImage https://github.com/keepassxreboot/keepassxc/releases/download/2.7.9/KeePassXC-2.7.9-x86_64.AppImage
-	mv KeePassXC-2.7.9-x86_64.AppImage KeePassXC.AppImage
+    if [ ! -f "$APPIMG_DIR/KeePassXC.AppImage" ]; then
+		wget -O KeePassXC.AppImage https://github.com/keepassxreboot/keepassxc/releases/download/2.7.10/KeePassXC-2.7.10-x86_64.AppImage
+	fi
     if [ ! -f "$APPIMG_DIR/KeePassXC.AppImage" ]; then
         echo "Error downloading KeePassXC.AppImage"
         exit 1
