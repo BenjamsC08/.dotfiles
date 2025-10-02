@@ -2,9 +2,9 @@
 
 packages="
   stow wget terminator zsh git gcc clang valgrind gdb build-essential 
-  curl zip unzip pciutils tree neofetch luarocks xsel xclip bear make
+  curl zip unzip pciutils tree luarocks xsel xclip bear make
 "
-modules = "font nvim"
+modules="font nvim zsh"
 
 DOTFILES_DIR="$HOME/.dotfiles"
 
