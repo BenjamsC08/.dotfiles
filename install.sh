@@ -2,7 +2,7 @@
 
 packages="
   stow wget terminator zsh git gcc clang valgrind gdb build-essential 
-  curl zip unzip pciutils tree luarocks xsel xclip bear make
+  curl zip unzip pciutils tree luarocks xsel xclip bear make libfuse2t64
 "
 modules="font nvim zsh"
 

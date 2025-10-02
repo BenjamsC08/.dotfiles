@@ -1,5 +1,5 @@
 
-appimg_path="$HOME/.dotfiles/AppImg"
+appimg_path="$HOME/.dotfiles/AppImg/"
 
 ## piscine [DEPRECATED]
 # alias mkex="$shell_path"mkex.sh
