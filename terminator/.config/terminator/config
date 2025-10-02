@@ -1,8 +1,5 @@
 [global_config]
-  title_transmit_bg_color = "#51ff00"
-  title_inactive_bg_color = "#26a269"
   inactive_color_offset = 0.8578125
-  suppress_multiple_term_dialog = True
 [keybindings]
   go_up = <Alt>KP_8
   go_down = <Alt>KP_2
@@ -14,9 +11,7 @@
   [[default]]
     background_color = "#282828"
     cursor_shape = ibeam
-    cursor_color = "#aaaaaa"
-    cursor_color_fg = False
-    font = 0xProto Nerd Font 10
+    font = 0xProto Nerd Font Mono 10
     foreground_color = "#ebdbb2"
     scrollbar_position = hidden
     scroll_on_keystroke = False
@@ -26,7 +21,6 @@
   [[transparent]]
     background_type = transparent
     cursor_shape = ibeam
-    cursor_color = "#aaaaaa"
     font = 0xProto Nerd Font 10
     foreground_color = "#00ff00"
     use_system_font = False
