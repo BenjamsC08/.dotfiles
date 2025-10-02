@@ -29,13 +29,21 @@ install_oh_my_zsh() {
 }
 
 install_powerlevel10k() {
-	echo "HERE"
-  if [ ! -d "$HOME/powerlevel10k" ]; then
+  if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
     echo "Installing powerlevel10k..."
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
   else
     echo "powerlevel10k already installed"
   fi
+}
+
+install_autoSuggestion() {
+	if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]; then
+		echo "Installing zsh auto-suggestion..."
+		git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+	else
+		echo "zsh auto-suggestion already installed"
+	fi
 }
 
 set_zsh_default() {
@@ -63,6 +71,7 @@ if command -v apt >/dev/null 2>&1; then
 	create_link
 	install_oh_my_zsh
 	install_powerlevel10k
+	install_autoSuggestion
 	set_zsh_default
 else
 	echo "OS or packages installer not Support"
