@@ -173,7 +173,7 @@ check_status() {
 if [ "$1" == "appimg" ]; then
     install_AppImg
     exit 0
-if [ command -v apt >/dev/null 2>&1 ]; then
+elif [ command -v apt >/dev/null 2>&1 ]; then
 	if [ "$1" == "cli" ]; then
 		install_packages
 		create_link
