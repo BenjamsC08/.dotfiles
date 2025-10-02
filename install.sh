@@ -42,6 +42,10 @@ set_zsh_default() {
   if [ "$SHELL" != "$(command -v zsh)" ]; then
     echo "Setting zsh as the default shell..."
     chsh -s "$(command -v zsh)"
+	rm -rf "$HOME/.zshrc"
+	cd $DOTFILES_DIR
+	stow zsh
+	
   else
     echo "zsh is already the default shell"
   fi
