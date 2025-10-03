@@ -13,7 +13,7 @@
     background_color = "#282828"
     cursor_shape = ibeam
     cursor_color = "#ebdbb2"
-    font = 0xProto Nerd Font 10
+    font = 0xProto Nerd Font Mono 10
     foreground_color = "#ebdbb2"
     scrollbar_position = hidden
     scroll_on_keystroke = False
