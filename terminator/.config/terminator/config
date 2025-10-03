@@ -1,4 +1,5 @@
 [global_config]
+  title_transmit_bg_color = "#2ec27e"
   inactive_color_offset = 0.8578125
 [keybindings]
   go_up = <Alt>KP_8
@@ -11,7 +12,8 @@
   [[default]]
     background_color = "#282828"
     cursor_shape = ibeam
-    font = 0xProto Nerd Font Mono 10
+    cursor_color = "#ebdbb2"
+    font = 0xProto Nerd Font 10
     foreground_color = "#ebdbb2"
     scrollbar_position = hidden
     scroll_on_keystroke = False
