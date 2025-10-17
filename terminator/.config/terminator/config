@@ -16,7 +16,6 @@
     font = 0xProto Nerd Font Mono 10
     foreground_color = "#ebdbb2"
     scrollbar_position = hidden
-    scroll_on_keystroke = False
     scrollback_lines = 1500
     scrollback_infinite = True
     use_system_font = False

@@ -24,5 +24,5 @@ alias m="cd ~/Prog/MINE/"
 alias M="cd ~/Prog/MINE/"
 alias i="INIT"
 alias b="bluetooth_reset"
-
+alias make="bear -- make"
 
