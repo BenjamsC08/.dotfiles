@@ -7,7 +7,7 @@ alias rmOut="find . -name '*.out' -print -delete"
 ## Common
 alias norm='norminette -R CheckForbiddenSourceHeader'
 alias normD='norm -R CheckDefine'
-alias gcc="cc -Wall -Wextra -Werror -g3"
+# alias gcc="cc -Wall -Wextra -Werror -g3"
 alias val="valgrind --leak-check=full --track-origins=yes -s"
 #AppImage
 alias nvim="$appimg_path"nvim.appimage
@@ -25,4 +25,4 @@ alias M="cd ~/Prog/MINE/"
 alias i="INIT"
 alias b="bluetooth_reset"
 alias make="bear -- make"
-
+alias hexdump="/home/benjamsc/localProg/ctf/forensics/Hexdump"

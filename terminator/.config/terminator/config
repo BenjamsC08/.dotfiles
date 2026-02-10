@@ -6,7 +6,16 @@
   go_down = <Alt>KP_2
   go_left = <Alt>KP_4
   go_right = <Alt>KP_6
+  toggle_scrollbar = ""
+  search = ""
+  toggle_zoom = ""
+  scaled_zoom = ""
+  hide_window = ""
+  ungroup_all = ""
   group_tab_toggle = F12
+  ungroup_tab = ""
+  insert_number = ""
+  insert_padded = ""
   help = KP_Subtract
 [profiles]
   [[default]]
@@ -22,7 +31,8 @@
   [[transparent]]
     background_type = transparent
     cursor_shape = ibeam
-    font = 0xProto Nerd Font 10
+    cursor_color = "#00ff00"
+    font = 0xProto Nerd Font Mono 10
     foreground_color = "#00ff00"
     use_system_font = False
 [layouts]
@@ -32,10 +42,8 @@
       parent = ""
       order = 0
       position = 0:32
-      maximised = True
       fullscreen = False
-      size = 2560, 1371
-      title = benjamsc@f4r10s13:~/Prog/CC/CUB3D
+      size = 800, 600
       last_active_term = 58668bf9-8ba8-4f78-9bf7-74e6bd9feae3
       last_active_window = True
     [[[terminal1]]]
@@ -53,7 +61,6 @@
       maximised = True
       fullscreen = False
       size = 2560, 1371
-      title = benjamsc@f4r10s13:~/Prog/CC/CUB3D
       last_active_term = ddef735b-0243-409a-aa32-007816c20e61
       last_active_window = True
     [[[child1]]]
