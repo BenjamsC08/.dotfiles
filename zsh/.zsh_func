@@ -15,31 +15,16 @@ function INIT() {
         echo "Erreur : le dossier '$1' existe déjà"
         return 1
     fi
-    mkdir "$1" && cd "$1" && mkdir srcs includes ; touch .gitignore Makefile || {
+    mkdir "$1" && cd "$1" && mkdir srcs includes && touch .gitignore Makefile || {
         echo "Erreur : échec lors de la création des dossiers"
         return 1
     }
-    if [ "$2" = "1" ]; then
-        git clone https://github.com/BenjamsC08/42_00_libft libft || {
-            echo "Erreur : échec du clonage du dépôt"
-            return 1
-        }
-    fi
 }
 
 cs() {
-	cd "$1" && clear && ls
+    cd "$1" && clear && ls
 }
 
 goto() {
     cd ~/"$1" && ls
-}
-
-my_lock()
-{
- umount /media/benjamsc/SSK\ Drive; ft_lock
-}
-my_logout()
-{
- umount /media/benjamsc/SSK\ Drive; kill -9 -1
 }

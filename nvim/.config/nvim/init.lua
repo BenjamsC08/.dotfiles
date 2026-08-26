@@ -37,14 +37,3 @@ require "nvchad.autocmds"
 vim.schedule(function()
   require "mappings"
 end)
-
-require('nvim-tree').setup({
-  git = {
-    enable = true,
-    ignore = false,
-  },
-  filters = {
-    dotfiles = false,
-    custom = {"*.o", "*.d", "^.git$"},
-  },
-})

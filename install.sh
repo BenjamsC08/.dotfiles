@@ -1,200 +1,324 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Portable bootstrap for Debian 12/13: zsh, nvim, terminator.
+set -euo pipefail
 
-packages="
-  stow wget terminator zsh git gcc clang valgrind gdb build-essential 
-  curl zip unzip pciutils tree luarocks xsel xclip bear make libfuse2t64
-  batcat
-"
-modules="font nvim zsh terminator"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APPIMG_DIR="$DOTFILES_DIR/AppImg"
+LOCAL_BIN="$HOME/.local/bin"
+MODULES=(font nvim zsh terminator)
 
-DOTFILES_DIR="$HOME/.dotfiles"
-APPIMG_DIR="$HOME/.dotfiles/AppImg"
+info() { printf '==> %s\n' "$*"; }
+warn() { printf 'warn: %s\n' "$*" >&2; }
+die()  { printf 'error: %s\n' "$*" >&2; exit 1; }
+
+need_cmd() {
+  command -v "$1" >/dev/null 2>&1 || die "missing command: $1"
+}
+
+os_check() {
+  if [[ ! -r /etc/os-release ]]; then
+    die "cannot read /etc/os-release"
+  fi
+  # shellcheck disable=SC1091
+  . /etc/os-release
+  if [[ "${ID:-}" != "debian" ]]; then
+    die "this installer targets Debian 12/13 (found ID=${ID:-unknown})"
+  fi
+  case "${VERSION_ID:-}" in
+    12|13) info "Debian ${VERSION_ID} detected" ;;
+    *)
+      warn "Debian ${VERSION_ID:-?} is untested (supported: 12, 13)"
+      ;;
+  esac
+  command -v apt-get >/dev/null 2>&1 || die "apt-get not found"
+}
+
+fuse_package() {
+  # Debian 13 (t64 transition) vs Debian 12.
+  case "${VERSION_ID:-}" in
+    13) printf '%s\n' "libfuse2t64" ;;
+    *)  printf '%s\n' "libfuse2" ;;
+  esac
+}
+
+nvim_asset() {
+  case "$(uname -m)" in
+    x86_64)  printf '%s\n' "nvim-linux-x86_64.appimage" ;;
+    aarch64) printf '%s\n' "nvim-linux-arm64.appimage" ;;
+    *) die "unsupported architecture: $(uname -m)" ;;
+  esac
+}
+
+pkg_installed() {
+  dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -q "install ok installed"
+}
 
 install_packages() {
-  for package in $packages; do
-    if ! dpkg -s "$package" >/dev/null 2>&1; then
-      echo "Trying to install $package"
-      sudo apt update && sudo apt install -y "$package"
+  local fuse pkg
+  fuse="$(fuse_package)"
+  local packages=(
+    stow wget curl ca-certificates git
+    zsh terminator
+    fontconfig unzip
+    gcc clang build-essential make
+    gdb valgrind bear
+    ripgrep xclip xsel
+    bat
+    clangd
+    "$fuse"
+  )
+
+  local missing=()
+  for pkg in "${packages[@]}"; do
+    if pkg_installed "$pkg"; then
+      info "package $pkg already installed"
     else
-      echo "$package already installed"
+      missing+=("$pkg")
     fi
   done
+
+  if ((${#missing[@]} == 0)); then
+    info "all apt packages already installed"
+    return 0
+  fi
+
+  command -v sudo >/dev/null 2>&1 || die "sudo is required to install packages"
+  info "apt-get update"
+  sudo apt-get update
+  info "installing: ${missing[*]}"
+  if ! sudo apt-get install -y "${missing[@]}"; then
+    if [[ "$fuse" == "libfuse2t64" ]]; then
+      warn "libfuse2t64 failed, trying libfuse2"
+      local retry=()
+      local p
+      for p in "${missing[@]}"; do
+        if [[ "$p" == "libfuse2t64" ]]; then
+          retry+=("libfuse2")
+        else
+          retry+=("$p")
+        fi
+      done
+      sudo apt-get install -y "${retry[@]}"
+    else
+      die "apt-get install failed"
+    fi
+  fi
 }
 
 install_oh_my_zsh() {
-  if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    echo "Installing oh-my-zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-  else
-    echo "oh-my-zsh already installed"
+  if [[ -d "$HOME/.oh-my-zsh" ]]; then
+    info "oh-my-zsh already installed"
+    return 0
+  fi
+  info "installing oh-my-zsh"
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
+    "" --unattended
+}
+
+install_p10k() {
+  local dest="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+  if [[ -d "$dest" ]]; then
+    info "powerlevel10k already installed"
+    return 0
+  fi
+  info "installing powerlevel10k"
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$dest"
+}
+
+install_autosuggestions() {
+  local dest="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+  if [[ -d "$dest" ]]; then
+    info "zsh-autosuggestions already installed"
+    return 0
+  fi
+  info "installing zsh-autosuggestions"
+  git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions "$dest"
+}
+
+backup_if_real() {
+  local target="$1"
+  if [[ -e "$target" && ! -L "$target" ]]; then
+    local bak="${target}.bak.$(date +%Y%m%d%H%M%S)"
+    info "backup $target -> $bak"
+    mv "$target" "$bak"
   fi
 }
 
-install_powerlevel10k() {
-  if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
-    echo "Installing powerlevel10k..."
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
-  else
-    echo "powerlevel10k already installed"
-  fi
-}
+create_links() {
+  need_cmd stow
+  mkdir -p "$HOME/.config"
 
-install_autoSuggestion() {
-	if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]; then
-		echo "Installing zsh auto-suggestion..."
-		git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-	else
-		echo "zsh auto-suggestion already installed"
-	fi
-}
+  backup_if_real "$HOME/.zshrc"
+  backup_if_real "$HOME/.p10k.zsh"
+  backup_if_real "$HOME/.zsh_aliases"
+  backup_if_real "$HOME/.zsh_func"
+  backup_if_real "$HOME/.config/nvim"
+  backup_if_real "$HOME/.config/terminator"
 
-set_zsh_default() {
-  if [ "$SHELL" != "$(command -v zsh)" ]; then
-    echo "Setting zsh as the default shell..."
-    chsh -s "$(command -v zsh)"
-	rm -rf "$HOME/.zshrc"
-	cd $DOTFILES_DIR
-	stow zsh
-	
-  else
-    echo "zsh is already the default shell"
-  fi
-}
-
-create_link() {
+  info "stow ${MODULES[*]}"
+  (
     cd "$DOTFILES_DIR"
-    for mod in $modules; do
-        stow "$mod" --adopt
+    local mod
+    for mod in "${MODULES[@]}"; do
+      stow -R "$mod"
     done
+  )
 }
 
 install_nvim() {
-	mkdir -p "$APPIMG_DIR"
+  local asset dest
+  asset="$(nvim_asset)"
+  dest="$APPIMG_DIR/nvim.appimage"
 
-    cd "$APPIMG_DIR"
+  mkdir -p "$APPIMG_DIR" "$LOCAL_BIN"
 
-    if [ ! -f "$APPIMG_DIR/nvim.appimage" ]; then
-		wget -O nvim.appimage https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
-	fi
-    if [ ! -f "$APPIMG_DIR/nvim.appimage" ]; then
-        echo "Error downloading nvim.appimage"
-        exit 1
-    fi
-    chmod u+x "$APPIMG_DIR/nvim.appimage"
-}
-
-install_keepass() {
-	if [ ! -f "$APPIMG_DIR/KeePassXC.AppImage" ]; then
-		wget -O KeePassXC.AppImage https://github.com/keepassxreboot/keepassxc/releases/download/2.7.10/KeePassXC-2.7.10-x86_64.AppImage
-	fi
-    if [ ! -f "$APPIMG_DIR/KeePassXC.AppImage" ]; then
-        echo "Error downloading KeePassXC.AppImage"
-        exit 1
-    fi
-    chmod u+x "$APPIMG_DIR/KeePassXC.AppImage"
-
-}
-
-install_AppImg() {
-	install_nvim
-	install_keepass
-}
-
-install_app() {
-	if [ ! -d "$HOME/.config/BraveSoftware" ]; then
-		curl -fsS https://dl.brave.com/install.sh | sh
-	fi
-}
-
-check_status() {
-  echo -e "\n\n\n\n\n=== Vérification de l'installation ==="
-
-  echo "Vérification des packages :"
-  for package in $packages; do
-    if dpkg -s "$package" >/dev/null 2>&1; then
-      echo "package $package installed ✅"
-    else
-      echo "package $package not installed ❌"
-    fi
-  done
-
-  echo -e "\nVérification des liens symboliques :"
-  for mod in $modules; do
-    case $mod in
-      zsh)
-        for file in .zshrc .p10k.zsh .zsh_aliases .zsh_func; do
-          if [ -L "$HOME/$file" ] && [ -e "$HOME/$file" ]; then
-            echo "link $file ✅"
-          else
-            echo "link $file ❌"
-          fi
-        done
-        ;;
-      nvim)
-        if [ -L "$HOME/.config/nvim" ]; then
-          echo "link nvim config ✅"
-        else
-          echo "link nvim config ❌"
-        fi
-        ;;
-      font)
-        if [ -d "$HOME/.fonts" ] && [ -L "$HOME/.fonts" ]; then
-          echo "link font directory ✅"
-        else
-          echo "link font directory ❌"
-        fi
-        ;;
-      terminator)
-        if [ -L "$HOME/.config/terminator" ]; then
-          echo "link terminator installed ✅"
-        else
-          echo "link terminator not installed ❌"
-        fi
-        ;;
-    esac
-  done
-
-  echo -e "\nVérification des téléchargements AppImage :"
-  for appimg in nvim.appimage KeePassXC.AppImage; do
-    if [ -f "$APPIMG_DIR/$appimg" ]; then
-      echo "$appimg downloaded ✅"
-    else
-      echo "$appimg not downloaded ❌"
-    fi
-  done
-
-  echo -e "\nVérification de Brave :"
-  if [ -d "$HOME/.config/BraveSoftware" ]; then
-    echo "Brave downladed ✅"
+  if [[ ! -f "$dest" ]]; then
+    info "downloading Neovim AppImage ($asset)"
+    curl -fL --retry 3 --retry-delay 2 \
+      -o "$dest" \
+      "https://github.com/neovim/neovim/releases/latest/download/${asset}"
   else
-    echo "Brave not downloaded ❌"
+    info "nvim.appimage already present"
+  fi
+
+  [[ -s "$dest" ]] || die "nvim.appimage download failed"
+  chmod u+x "$dest"
+  ln -sfn "$dest" "$LOCAL_BIN/nvim"
+  info "nvim -> $LOCAL_BIN/nvim"
+}
+
+refresh_fonts() {
+  if command -v fc-cache >/dev/null 2>&1; then
+    info "refreshing font cache"
+    fc-cache -f "$HOME/.fonts" >/dev/null 2>&1 || fc-cache -f
+  else
+    warn "fc-cache not found, skip font cache"
   fi
 }
 
-if [ "$1" == "appimg" ]; then
-    install_AppImg
-    exit 0
-elif command -v apt >/dev/null 2>&1; then
-	if [ "$1" == "cli" ]; then
-		install_packages
-		create_link
-		install_oh_my_zsh
-		install_powerlevel10k
-		install_autoSuggestion
-		set_zsh_default
-		install_nvim
-	else
-		install_packages
-		create_link
-		install_oh_my_zsh
-		install_powerlevel10k
-		install_autoSuggestion
-		set_zsh_default
-		install_AppImg
-		install_app
-		check_status
-	fi
-else
-    echo "OS or packages installer not supported"
-    exit 1
-fi
+set_zsh_default() {
+  local zsh_path
+  zsh_path="$(command -v zsh)" || die "zsh not installed"
+  if [[ "${SHELL:-}" == "$zsh_path" ]]; then
+    info "zsh is already the default shell"
+    return 0
+  fi
+  info "setting zsh as default shell"
+  if ! chsh -s "$zsh_path"; then
+    warn "chsh failed; run: chsh -s $zsh_path"
+  fi
+}
+
+link_ok() {
+  [[ -L "$1" && -e "$1" ]]
+}
+
+check_status() {
+  printf '\n=== status ===\n'
+
+  local pkg fuse
+  fuse="$(fuse_package)"
+  for pkg in stow zsh terminator git curl wget ripgrep clangd "$fuse"; do
+    if pkg_installed "$pkg"; then
+      printf 'package %s ok\n' "$pkg"
+    else
+      printf 'package %s MISSING\n' "$pkg"
+    fi
+  done
+
+  local file
+  for file in .zshrc .p10k.zsh .zsh_aliases .zsh_func; do
+    if link_ok "$HOME/$file"; then
+      printf 'link ~/%s ok\n' "$file"
+    else
+      printf 'link ~/%s MISSING\n' "$file"
+    fi
+  done
+
+  if link_ok "$HOME/.config/nvim" || [[ -L "$HOME/.config/nvim/init.lua" ]]; then
+    printf 'link nvim config ok\n'
+  else
+    printf 'link nvim config MISSING\n'
+  fi
+
+  if link_ok "$HOME/.config/terminator" || [[ -L "$HOME/.config/terminator/config" ]]; then
+    printf 'link terminator ok\n'
+  else
+    printf 'link terminator MISSING\n'
+  fi
+
+  if [[ -d "$HOME/.fonts" ]]; then
+    printf 'fonts dir ok\n'
+  else
+    printf 'fonts dir MISSING\n'
+  fi
+
+  if [[ -x "$LOCAL_BIN/nvim" ]]; then
+    printf 'nvim wrapper ok (%s)\n' "$LOCAL_BIN/nvim"
+  else
+    printf 'nvim wrapper MISSING\n'
+  fi
+
+  if [[ -d "$HOME/.oh-my-zsh" ]]; then
+    printf 'oh-my-zsh ok\n'
+  else
+    printf 'oh-my-zsh MISSING\n'
+  fi
+
+  if [[ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]]; then
+    printf 'powerlevel10k ok\n'
+  else
+    printf 'powerlevel10k MISSING\n'
+  fi
+
+  if [[ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]]; then
+    printf 'zsh-autosuggestions ok\n'
+  else
+    printf 'zsh-autosuggestions MISSING\n'
+  fi
+}
+
+usage() {
+  cat <<EOF
+usage: $(basename "$0") [check]
+
+  (no args)  install packages, stow configs, nvim, zsh
+  check      print status only
+EOF
+}
+
+main() {
+  case "${1:-}" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    check)
+      os_check
+      check_status
+      exit 0
+      ;;
+    "")
+      ;;
+    *)
+      usage >&2
+      exit 1
+      ;;
+  esac
+
+  os_check
+  install_packages
+  install_oh_my_zsh
+  install_p10k
+  install_autosuggestions
+  create_links
+  install_nvim
+  refresh_fonts
+  set_zsh_default
+  check_status
+  info "done. open a new terminal (or exec zsh)."
+  info "machine-specific PATH/aliases go in ~/.zshrc.local"
+}
+
+main "$@"

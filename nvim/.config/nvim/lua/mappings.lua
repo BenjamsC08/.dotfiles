@@ -28,11 +28,11 @@ map("n", "gd","<cmd>Lspsaga goto_definition<CR>", {desc ="Go to definition"})
 --
 
 map("n", "<leader>qf", function()
-  local entry = string.format(
-    "%s:%d: %s",
-    vim.fn.expand("%:p"),
-    vim.fn.line("."),   
-    vim.fn.getline(".")
-  )
-  vim.cmd("caddexpr '" .. entry .. "'")
+  vim.fn.setqflist({
+    {
+      filename = vim.fn.expand "%:p",
+      lnum = vim.fn.line ".",
+      text = vim.fn.getline ".",
+    },
+  }, "a")
 end, { desc = "Add current line to quickfix" })
