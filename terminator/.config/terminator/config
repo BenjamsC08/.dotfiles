@@ -37,102 +37,11 @@
     use_system_font = False
 [layouts]
   [[default]]
-    [[[child0]]]
+    [[[window0]]]
       type = Window
       parent = ""
-      order = 0
-      position = 0:32
-      fullscreen = False
-      size = 800, 600
-      last_active_term = 58668bf9-8ba8-4f78-9bf7-74e6bd9feae3
-      last_active_window = True
-    [[[terminal1]]]
-      type = Terminal
-      parent = child0
-      order = 0
-      profile = default
-      uuid = 58668bf9-8ba8-4f78-9bf7-74e6bd9feae3
-  [[New Layout 1]]
-    [[[child0]]]
-      type = Window
-      parent = ""
-      order = 0
-      position = 0:32
-      maximised = True
-      fullscreen = False
-      size = 2560, 1371
-      last_active_term = ddef735b-0243-409a-aa32-007816c20e61
-      last_active_window = True
     [[[child1]]]
-      type = HPaned
-      parent = child0
-      order = 0
-      position = 1576
-      ratio = 0.6168297455968689
-    [[[terminal2]]]
       type = Terminal
-      parent = child1
-      order = 0
+      parent = window0
       profile = default
-      uuid = 58668bf9-8ba8-4f78-9bf7-74e6bd9feae3
-    [[[child3]]]
-      type = VPaned
-      parent = child1
-      order = 1
-      position = 683
-      ratio = 0.5
-    [[[terminal4]]]
-      type = Terminal
-      parent = child3
-      order = 0
-      profile = default
-      uuid = 4db495a0-1932-42f1-83b8-d2f37ec7a79e
-    [[[terminal5]]]
-      type = Terminal
-      parent = child3
-      order = 1
-      profile = default
-      uuid = ddef735b-0243-409a-aa32-007816c20e61
-  [[New Layout]]
-    [[[child0]]]
-      type = Window
-      parent = ""
-      order = 0
-      position = 0:32
-      maximised = True
-      fullscreen = False
-      size = 1920, 1011
-      title = ⠙ - Responding - Low Gas Overpay Prefund Penalty Finding - grok
-      last_active_term = 7658f62e-72c2-4f35-b337-8e29235c632b
-      last_active_window = True
-    [[[child1]]]
-      type = HPaned
-      parent = child0
-      order = 0
-      position = 1184
-      ratio = 0.6182767624020887
-    [[[child2]]]
-      type = VPaned
-      parent = child1
-      order = 0
-      position = 809
-      ratio = 0.8041749502982107
-    [[[terminal3]]]
-      type = Terminal
-      parent = child2
-      order = 0
-      profile = default
-      uuid = 016da8d7-52cb-4143-a8c7-f1e12bc9d42b
-    [[[terminal4]]]
-      type = Terminal
-      parent = child2
-      order = 1
-      profile = default
-      uuid = 7658f62e-72c2-4f35-b337-8e29235c632b
-    [[[terminal5]]]
-      type = Terminal
-      parent = child1
-      order = 1
-      profile = default
-      uuid = f3bb0b19-a663-4197-8ea9-385c3bca74e1
 [plugins]
