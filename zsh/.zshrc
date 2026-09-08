@@ -18,3 +18,11 @@ source "$ZSH/oh-my-zsh.sh"
 
 # Per-machine overrides (PATH, extra aliases). Not tracked.
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+source ~/.env/base/bin/activate
+
+# >>> grok installer >>>
+export PATH="$HOME/.grok/bin:$PATH"
+fpath=(~/.grok/completions/zsh $fpath)
+autoload -Uz compinit && compinit -C
+# <<< grok installer <<<

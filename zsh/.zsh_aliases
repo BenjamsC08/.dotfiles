@@ -2,7 +2,7 @@
 alias gcf="cc -Wall -Wextra -Werror -O"
 alias gcd="cc -g3 -O0"
 alias vg="valgrind --leak-check=full --track-origins=yes -s"
-
+alias objdump="objdump -M intel -D"
 # Utils
 alias bmake="bear -- make"
 
